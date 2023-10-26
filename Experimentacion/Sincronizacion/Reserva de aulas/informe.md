@@ -8,13 +8,27 @@ Los `alumnos` se ejecutan de manera concurrente realizando las operaciones aleat
 
 El alumno almacenara la hora reservada (en caso de que tuviera una).
 
-- Para las reservas se eligirá la hora de manera aleatoria y se intentará registrarlo en la tabla de horas y se guardará su pocición. 
-En caso de que no se pueda realizar la reserva. (El alumno deberia esperar o continuar?)
+- Para las reservas se eligirá la hora de manera aleatoria y se intentará registrarlo en la tabla de horas y se guardará su posición. 
+En caso de que no se pueda realizar la reserva el alumno el alumno tendrá que volver a elegir una operación. 
 - Para la cancelacion se utilizara el horario almacenado.
 - Para la consulta tambien se elijirá el horario de manera aleatoria.
 
 
-    Para registrar y cancelar reservas se garantizará la exclusión mutua al momento de modificar la tabla de reservas.
+Para registrar y cancelar reservas se garantizará la exclusión mutua al momento de modificar la tabla de reservas.
 
 ### (II) Explique el comportamiento que presenta su solución.
+
+La solución retorna mensajes con los eventos ocurridos durante la ejecucion del programa. Los eventos que podrian ocurrir son los siguientes:
+
+- El alumno reserva un turno. 
+  - Ya contaba con un turno previo.
+  - La hora que intenta reservar ya fue reservada.
+  - Se realiza la reserva correctamente.
+- El alumno cancela la reserva.
+  - Intenta cancelar una reserva pero no tiene ninguna.
+  - Se cancela la reserva correctamente.
+- El alumno consulta el estado de un horario.
+  - El horario se encuentra reservado.
+  - El horario no se encuentra reseervado.
+
 ### (III)Resuelva el mismo problema utilizando procesos y memoria compartida.
