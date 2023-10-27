@@ -238,8 +238,8 @@ void empleados(int i, int msg_idEmp, int msg_idPol, int msg_idUsu) {
     while (1) {
         if(msgrcv(msg_idPol, &m, size, 1, IPC_NOWAIT) != -1){ // Los tres empleados atienden politicos primero
             printf("Un politico es atendido y se retira.\n");
-            sleep(6);
 			fflush(stdout);
+            sleep(6);
 		} else { // No hay politicos para atender. Cuando esto ocurre los empleados atienden las otras filas
             if(i == 0 || i == 1) { // Empleados 0 y 1: Atienden empresas
                 if(msgrcv(msg_idEmp, &m, size, 1, IPC_NOWAIT) != -1){
