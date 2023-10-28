@@ -12,12 +12,13 @@
 #define CANT_HORAS_MAX 12
 struct computadora{
     int turno[CANT_HORAS_MAX]; /* dato del segmento */
+    int consultas;
 };
 
-#define KEY ((key_t) (1243)) /* número de llave */
+#define KEY ((key_t) (1245)) /* número de llave */
 #define SEGSIZE sizeof (struct computadora) /* longitud del segmento */
 
-sem_t mutex;
+sem_t mutex,rMutex;
 
 void alumno(int nroAlumno);
 
@@ -25,9 +26,10 @@ int main(){
     int id,pid;
     struct computadora *aula;
     sem_init(&mutex,1,1);
+    sem_init(&rMutex,1,1);
     id = shmget(KEY, SEGSIZE, IPC_CREAT | 0666);
     if (id <0){
-        printf(" FALLO EL shmget \n"); exit(EXIT_FAILURE);
+        printf(" FALLO EL shmget id: %d \n",id); exit(EXIT_FAILURE);
     }
     aula = (struct computadora*) shmat(id,0,0);
     if (aula <= (struct computadora *) (0)){
@@ -38,6 +40,7 @@ int main(){
     for (int i = 0; i < CANT_HORAS_MAX; ++i) {
         aula->turno[i] = NO_RESERVADO;
     }
+    aula->consultas=0;
 
     for (int i =0; i<CANT_ALUMNOS; i++) {
         pid = fork();				// se hace fork()
@@ -76,7 +79,7 @@ void alumno(int nroAlumno){
     }
 
     //inicializo el generador pseudoaleatorio
-    srand((unsigned int) time(NULL));
+    srand((unsigned int) (time(NULL) * getpid()));
 
     while (1){
         opcion = rand() % 100;
@@ -110,11 +113,26 @@ void alumno(int nroAlumno){
         }else{
             //Consultar reserva
             horaSeleccionada = rand() % CANT_HORAS_MAX;
+
+            sem_wait(&rMutex);
+            aula->consultas = aula->consultas + 1;
+            if (aula->consultas == 1){ //si soy el primero que consulta
+                sem_wait(&mutex); //bloqueo la tabla de reservas
+            }
+            sem_post(&rMutex);
+
             if(aula->turno[horaSeleccionada] == RESERVADO){
                 printf("El alumno %d consultó si la computadora esta reservada a las %d horas y resultó que lo estaba.\n", nroAlumno, horaSeleccionada+9);
             }else{
                 printf("El alumno %d consultó si la computadora esta reservada a las %d horas y resultó que no lo estaba.\n", nroAlumno, horaSeleccionada+9);
             }
+
+            sem_wait(&rMutex);
+            aula->consultas = aula->consultas - 1;
+            if (aula->consultas == 0){ //si soy el ultimo que consulta
+                sem_post(&mutex); //desbloqueo la tabla de reservas
+            }
+            sem_post(&rMutex);
         }
         sleep(2);
     }

@@ -10,13 +10,16 @@
 #define CANT_HORAS_MAX 12
 
 pthread_t alumnos[CANT_ALUMNOS];
-pthread_mutex_t mutex;
-int horas[CANT_HORAS_MAX];
+pthread_mutex_t mutex,rMutex;
+
+int horas[CANT_HORAS_MAX],
+consultores = 0; //se utiliza para controlar la rafaga de consultas
 
 void *alumno( void *arg);
 
 int main(){
     pthread_mutex_init(&mutex,NULL);
+    pthread_mutex_init(&rMutex,NULL);
 
     //inicializo la tabla de reservas
     for (int i = 0; i < CANT_HORAS_MAX; ++i) {
@@ -34,6 +37,7 @@ int main(){
     }
 
     pthread_mutex_destroy(&mutex);
+    pthread_mutex_destroy(&rMutex);
     return 0;
 }
 
@@ -76,11 +80,26 @@ void *alumno(void *arg){
         }else{
             //Consultar reserva
             horaSeleccionada = rand() % CANT_HORAS_MAX;
+            pthread_mutex_lock(&rMutex);
+            consultores++;
+            if (consultores == 1){ //si soy el primero que consulta
+                pthread_mutex_lock(&mutex); //bloqueo la tabla de reservas
+            }
+            pthread_mutex_unlock(&rMutex);
+
+            //consulto tabla
             if(horas[horaSeleccionada] == RESERVADO){
                 printf("El alumno %d consultó si la computadora esta reservada a las %d horas y resultó que lo estaba.\n", nroAlumno, horaSeleccionada+9);
             }else{
                 printf("El alumno %d consultó si la computadora esta reservada a las %d horas y resultó que no lo estaba.\n", nroAlumno, horaSeleccionada+9);
             }
+
+            pthread_mutex_lock(&rMutex);
+            consultores--;
+            if (consultores == 0){ //si soy el ultimo que consulta
+                pthread_mutex_unlock(&mutex); //desbloqueo la tabla de reservas
+            }
+            pthread_mutex_unlock(&rMutex);
         }
         sleep(2);
     }
