@@ -63,7 +63,6 @@ void welcome(){
 
 void executeCmd(char** args){
     int pid;
-    int status;
     pid = vfork();
     if (pid == 0){
         if(execv(args[0],args) == -1)
@@ -72,7 +71,5 @@ void executeCmd(char** args){
             printf("Comando inválido\n");
     }else if (pid < 0) {
         perror("Error durante la creación del proceso\n");
-    }else {
-        wait(&status);
     }
 }
