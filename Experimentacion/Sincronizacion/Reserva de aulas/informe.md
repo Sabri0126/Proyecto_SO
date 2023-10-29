@@ -31,4 +31,6 @@ La solución retorna mensajes con los eventos ocurridos durante la ejecucion del
   - El horario se encuentra reservado.
   - El horario no se encuentra reseervado.
 
+ Se consideró la posible inanicion de los procesos que quieren realizar reservas/cancelaciones. En esta solucion se dio prioridad a las consultas frente a las reservas/cancelaciones debido a que las consultas ocurren con menor frecuencia reduciendo la probabilidad de inanicion y simplificando la implementacion de la solución.
+
 ### (III)Resuelva el mismo problema utilizando procesos y memoria compartida.
