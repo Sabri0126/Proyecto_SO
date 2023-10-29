@@ -59,20 +59,56 @@ void *d(){
 }
 
 int main(){
-	//creacion de semaforos
+	//Creacion de semaforos
 	sem_init(&sem_a,0,1);
 	sem_init(&sem_b,0,0);
 	sem_init(&sem_c,0,0);
 	sem_init(&sem_d,0,0);
 	
-	//creacion de hilos
-	pthread_create(&threadA,NULL,&a,NULL);
-	pthread_create(&threadB,NULL,&b,NULL);
-	pthread_create(&threadC,NULL,&c,NULL);
-	pthread_create(&threadD,NULL,&d,NULL);
+	//Creacion de hilos
+	if(pthread_create(&threadA,NULL,&a,NULL) != 0){
+		printf("Error al crear el hilo.\n");
+        return 1;
+	}
 
-	pthread_join(threadA,NULL);
-	pthread_join(threadB,NULL);
-	pthread_join(threadC,NULL);
-	pthread_join(threadD,NULL);
+	if(pthread_create(&threadB,NULL,&b,NULL) != 0){
+		printf("Error al crear el hilo.\n");
+        return 1;
+	}
+
+	if(pthread_create(&threadC,NULL,&c,NULL) != 0){
+		printf("Error al crear el hilo.\n");
+        return 1;
+	}
+
+	if(pthread_create(&threadD,NULL,&d,NULL) != 0){
+		printf("Error al crear el hilo.\n");
+        return 1;
+	}
+
+	if(pthread_join(threadA,NULL) != 0){
+		printf("Error al hacer join.\n");
+        return 2;
+	}
+
+	if(pthread_join(threadB,NULL) != 0){
+		printf("Error al hacer join.\n");
+        return 2;
+	}
+
+	if(pthread_join(threadC,NULL) != 0){
+		printf("Error al hacer join.\n");
+        return 2;
+	}
+
+	if(pthread_join(threadD,NULL) != 0){
+		printf("Error al hacer join.\n");
+        return 2;
+	}
+
+	// Destruimos los semaforos
+    sem_destroy(&sem_a);
+    sem_destroy(&sem_b);
+    sem_destroy(&sem_c);
+    sem_destroy(&sem_d);
 }

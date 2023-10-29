@@ -14,7 +14,7 @@ int posClienteP = 0, posClienteE = 0, posClienteU = 0, posCliente = 0; // Indice
 int im = 0, ip = 0, ie = 0, iu = 0; // Indices de cada fila de espera
 
 sem_t sem_mesa, sem_colaEmp, sem_colaPol, sem_colaUsu, mutex;
-pthread_t hilo_mesa, hilo_filas[2], hilo_empleados[3];
+pthread_t hilo_mesa, hilo_filas, hilo_empleados[3];
 
 void *mesa_de_entrada(){
     srand(time(NULL));
@@ -115,13 +115,14 @@ void *filas_especificas(){
             }
         }
         sem_post(&mutex); // Fin seccion critica
-        sleep(rand() % 3 + 1);
+        sleep(rand() % 2 + 1);
     }
     exit(0);
 }
 
 void *empleados(void *arg){
     sleep(20);
+    srand(time(NULL));
     int id_empleado = (int) arg;
     while(1){
         sem_wait(&mutex);
@@ -135,7 +136,6 @@ void *empleados(void *arg){
             fflush(stdout);
             clientesPoliticos--;
             sem_post(&sem_colaPol); // Libera el lugar
-			sleep(3);
         } else { // No hay politicos para atender. Cuando esto ocurre los empleados atienden las otras filas
             if((id_empleado == 0 || id_empleado == 1)){ // Empleados 0 y 1: Atienden empresas
                 if(clientesEmpresas > 0){ // Verificamos que haya empresas en la fila
@@ -147,7 +147,6 @@ void *empleados(void *arg){
                     fflush(stdout);
                     clientesEmpresas--;
                     sem_post(&sem_colaEmp); // Libera el lugar
-                    sleep(1);
                 }
             } else { // Empleado 2: Atiende usuarios
                 if(clientesUsuarios > 0){ // Verificamos que haya usuarios en la fila
@@ -159,12 +158,11 @@ void *empleados(void *arg){
                     fflush(stdout);
                     clientesUsuarios--;
                     sem_post(&sem_colaUsu); // Libera el lugar
-                    sleep(1);
                 }
             }
         }
         sem_post(&mutex);
-        sleep(2);
+        sleep(rand() % 5 + 3);
     }
     exit(0);
 }
@@ -183,12 +181,12 @@ int main(){
         return 1;
     };
 
-    for (int i = 0; i < 2; i++) {
-        if(pthread_create(&hilo_filas[i], NULL, &filas_especificas, NULL) != 0){
-            printf("Error al crear el hilo.\n");
-            return 1;
-        };
-    }
+
+    if(pthread_create(&hilo_filas, NULL, &filas_especificas, NULL) != 0){
+        printf("Error al crear el hilo.\n");
+        return 1;
+    };
+
  
     for (int i = 0; i < 3; i++) {
         if(pthread_create(&hilo_empleados[i], NULL, &empleados, (void *) i) != 0){
@@ -197,22 +195,19 @@ int main(){
         }
     }
     
-    // Asignaciones
     if(pthread_join(hilo_mesa,NULL) != 0){
-        printf("Error al crear el hilo.\n");
+        printf("Error al hacer join.\n");
+        return 2;
+    };
+
+    if(pthread_join(hilo_filas, NULL) != 0){
+        printf("Error al hacer join.\n");
         return 2;
     };
 
     for (int i = 0; i < 3; i++){
-        if(pthread_join(hilo_filas[i], NULL) != 0){
-            printf("Error al crear el hilo.\n");
-            return 2;
-        };
-    }
-
-    for (int i = 0; i < 3; i++){
         if(pthread_join(hilo_empleados[i], NULL) != 0){
-            printf("Error al crear el hilo.\n");
+            printf("Error al hacer join.\n");
             return 2;
         };
     }
@@ -222,5 +217,6 @@ int main(){
     sem_destroy(&sem_colaEmp);
     sem_destroy(&sem_colaPol);
     sem_destroy(&sem_colaUsu);
+    sem_destroy(&mutex);
     return 0;
 }

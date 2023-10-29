@@ -110,7 +110,7 @@ void d(){
 
 int main(){
     int pid;
-		int entero;
+	int entero;
 	
     if(pipe(pipeA) == -1){return -1;}
     if(pipe(pipeB) == -1){return -1;}
@@ -130,7 +130,7 @@ int main(){
         a();       
     }
 		
-		pid = fork(); 
+	pid = fork(); 
     if(pid < 0){
         printf("Error al crear un proceso ");
     }else if(pid==0){
@@ -138,7 +138,7 @@ int main(){
         b();       
     }
 		
-		pid = fork(); 
+	pid = fork(); 
     if(pid < 0){
         printf("Error al crear un proceso ");
     }else if(pid==0){
@@ -146,7 +146,7 @@ int main(){
         c();       
     }
 
-		pid = fork(); 
+	pid = fork(); 
     if(pid < 0){
         printf("Error al crear un proceso ");
     }else if(pid==0){

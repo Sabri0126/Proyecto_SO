@@ -99,7 +99,7 @@ int main(){
 }
 
 void mesa_de_entrada(int msg_idMesa) {
-    srand(time(NULL));
+    srand(getpid()*time(NULL));
     char tipo_cliente = ' ';
     int num_random = 0;
     clientesMesa = 0;
@@ -126,13 +126,14 @@ void mesa_de_entrada(int msg_idMesa) {
             printf("Cliente se retira porque la mesa de entrada está llena.\n");
             fflush(stdout);
         }
-        sleep(1);
+        sleep(rand() % 2 + 1);
     }
     exit(0);
 }
 
 void filas_especificas(int msg_idMesa, int msg_idEmp, int msg_idPol, int msg_idUsu) {
     sleep(5);
+    srand(getpid()*time(NULL));
     clientesPoliticos = 0;
     clientesEmpresas = 0;
     clientesUsuarios = 0;
@@ -224,7 +225,7 @@ void filas_especificas(int msg_idMesa, int msg_idEmp, int msg_idPol, int msg_idU
                 break;
             }
         }
-        sleep(1);
+        sleep(rand() % 2 + 1);
     }
     exit(0);
 }
@@ -233,7 +234,7 @@ void filas_especificas(int msg_idMesa, int msg_idEmp, int msg_idPol, int msg_idU
  * Empleado 2 atiende Usuarios
  * Los 3 empleados atienden Politicos*/
 void empleados(int i, int msg_idEmp, int msg_idPol, int msg_idUsu) {
-    sleep(10); // Delay grande para permitir que las filas se vayan llenando antes de comenzar a atender
+    sleep(20); // Delay grande para permitir que las filas se vayan llenando antes de comenzar a atender
     struct message m;
     while (1) {
         if(msgrcv(msg_idPol, &m, size, 1, IPC_NOWAIT) != -1){ // Los tres empleados atienden politicos primero

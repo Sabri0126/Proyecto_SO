@@ -74,13 +74,13 @@ void c(){
 
 int main(){
     int pid;
-		int entero;
+	int entero;
 	
     if(pipe(pipeA) == -1){return -1;}
     if(pipe(pipeB) == -1){return -1;}
     if(pipe(pipeC) == -1){return -1;}
     
-    entero =1; 
+    entero = 1; 
     //Inicializamos los pipes correspondientes
     write(pipeA[1], &entero, sizeof(int));
     
@@ -93,7 +93,7 @@ int main(){
         a();       
     }
 		
-		pid = fork(); 
+	pid = fork(); 
     if(pid < 0){
         printf("Error al crear un proceso ");
     }else if(pid==0){
@@ -101,15 +101,15 @@ int main(){
         b();       
     }
 		
-		pid = fork(); 
+	pid = fork(); 
     if(pid < 0){
         printf("Error al crear un proceso ");
-    }else if(pid==0){
+    } else if(pid==0){
         //Ejecutamos c
         c();       
     }
 
-		for(int i = 0; i<3; i++){
+	for(int i = 0; i<3; i++){
         wait(NULL);
     }
 }
