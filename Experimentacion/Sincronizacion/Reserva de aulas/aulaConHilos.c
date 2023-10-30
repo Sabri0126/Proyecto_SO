@@ -28,12 +28,18 @@ int main(){
 
     //creacion de hilos
     for (int i = 0; i < CANT_ALUMNOS; ++i) {
-        pthread_create(&alumnos[i], NULL, &alumno, (void *) i);
+        if(pthread_create(&alumnos[i], NULL, &alumno, (void *) i) != 0){
+            printf("Error al crear el hilo.\n");
+            return 1;
+        }
     }
 
     //finalizacion de hilos
     for (int i = 0; i < CANT_ALUMNOS; ++i) {
-        pthread_join(alumnos[i],NULL);
+        if(pthread_join(alumnos[i],NULL) != 0){
+           printf("Error al hacer join.\n");
+            return 2; 
+        }
     }
 
     pthread_mutex_destroy(&mutex);

@@ -179,13 +179,13 @@ int main(){
     if(pthread_create(&hilo_mesa, NULL, &mesa_de_entrada, NULL) != 0){
         printf("Error al crear el hilo.\n");
         return 1;
-    };
+    }
 
 
     if(pthread_create(&hilo_filas, NULL, &filas_especificas, NULL) != 0){
         printf("Error al crear el hilo.\n");
         return 1;
-    };
+    }
 
  
     for (int i = 0; i < 3; i++) {
@@ -198,18 +198,18 @@ int main(){
     if(pthread_join(hilo_mesa,NULL) != 0){
         printf("Error al hacer join.\n");
         return 2;
-    };
+    }
 
     if(pthread_join(hilo_filas, NULL) != 0){
         printf("Error al hacer join.\n");
         return 2;
-    };
+    }
 
     for (int i = 0; i < 3; i++){
         if(pthread_join(hilo_empleados[i], NULL) != 0){
             printf("Error al hacer join.\n");
             return 2;
-        };
+        }
     }
 
     // Destruimos los semaforos
