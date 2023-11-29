@@ -178,14 +178,14 @@ void *empleadosEmpresas(void *arg){
     while(1){
         if(sem_trywait(&sem_filaPol_lleno) == 0){
             // Hay politicos esperando
-            sem_post(&sem_empleadoPol);
+            sem_post(&sem_empleadoPol); // Manda una señal para comenzar la atencion
             printf("Un empleado esta atendiendo un politico. (id_empleado: %d)\n",id_empleado);
             sem_wait(&sem_politico_atendido); // Espera a que termine de atenderse
             printf("El empleado termino de atender un politico. (id_empleado: %d)\n",id_empleado);
         } else {
             // No hay politicos esperando
             sem_wait(&sem_filaEmp_lleno); // Espera a que haya una empresa en la fila
-            sem_post(&sem_empleadoEmp);
+            sem_post(&sem_empleadoEmp); // Manda una señal para comenzar la atencion
             printf("Un empleado esta atendiendo una empresa. (id_empleado: %d)\n",id_empleado);
             sem_post(&sem_empresa_atendida);
             printf("El empleado termino de atender una empresa. (id_empleado: %d)\n",id_empleado);
@@ -198,16 +198,16 @@ void *empleadoUsuario(){
     while(1){
         if(sem_trywait(&sem_filaPol_lleno) == 0){
             // Hay politicos esperando
-            sem_post(&sem_empleadoPol);
+            sem_post(&sem_empleadoPol); // Manda una señal para comenzar la atencion
             printf("Un empleado esta atendiendo un politico. (id_empleado: %d)\n",id_empleado);
             sem_wait(&sem_politico_atendido); // Espera a que termine de atenderse
             printf("El empleado termino de atender un politico. (id_empleado: %d)\n",id_empleado);
         } else {
             // No hay politicos esperando
-            sem_wait(&sem_filaUsu_lleno); // Espera a que haya una empresa en la fila
-            sem_post(&sem_empleadoUsu);
+            sem_wait(&sem_filaUsu_lleno); // Espera a que haya un usuario en la fila
+            sem_post(&sem_empleadoUsu); // Manda una señal para comenzar la atencion
             printf("Un empleado esta atendiendo un usuario. (id_empleado: %d)\n",id_empleado);
-            sem_post(&sem_usuario_atendido);
+            sem_post(&sem_usuario_atendido); // Espera a que termine de atenderse
             printf("El empleado termino de atender un usuario. (id_empleado: %d)\n",id_empleado);
         }        
     }
